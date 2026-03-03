@@ -139,3 +139,12 @@ participant --participant_label ${SUBJECT} \
 --bold2anat-dof 6 \
 --me-output-echos \
 --fs-license-file /opt/freesurfer/license.txt
+
+########################################
+#### To DO's
+'''
+The above will only do multiple echoes combination, but will not do ME-ICA.
+Looks like we need to look into doing ME-ICA outside of fMRIprep, using tedana.
+https://tedana.readthedocs.io/en/stable/usage.html
+
+'''
