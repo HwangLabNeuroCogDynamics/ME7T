@@ -136,6 +136,6 @@ participant --participant_label ${SUBJECT} \
 -w /data/backed_up/shared/ME_7T_Pilot/work \
 --nthreads 24 \
 --ignore slicetiming \
---bold2anat-dof 9 \
+--bold2anat-dof 6 \
 --me-output-echos \
 --fs-license-file /opt/freesurfer/license.txt
