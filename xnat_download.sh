@@ -1,14 +1,14 @@
-enter the name of the file we want to move, copy, unzip, and link
+#enter the name of the file we want to move, copy, unzip, and link
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # - - - MODIFY THE VARIABLES BELOW!!!!
 user_id="kahwang" # hawk id of whoever is running the script
-zip_filename="2026_02_03.zip" # will be date of MRI session
-cur_sub_id="HYPEREPI2"
-RPACS_num="E101552" # you will have to log into XNAT to get this for each subject!!! 
+zip_filename="20260406.zip" # will be date of MRI session
+cur_sub_id="20260406_TEST"
+RPACS_num="E106005" # you will have to log into XNAT to get this for each subject!!! 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # should be consistent across users
 #cd scripts/quantum7T/mri_scripts/
-project_name="VAM_DEV" #or HWANG_NET
+project_name="QUANTUM_7T" #or HWANG_NET #
 if [ -d /Volumes ]; then
     echo using Volumes as root folder
     rdss_root="/Volumes/rdss_kahwang/"
