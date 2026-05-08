@@ -201,6 +201,17 @@ participant --participant_label ${SUBJECT} \
 
 #--ignore slicetiming \
 
+
+# MRIQC
+SUBJECT="20260406nordic"
+mriqc_container=/data/backed_up/shared/software/containers/mriqc_latest.sif
+apptainer exec \
+--bind /data/backed_up/shared:/data/backed_up/shared \
+${mriqc_container} \
+mriqc /data/backed_up/shared/ME_7T_Pilot/BIDS_NORDIC /data/backed_up/shared/ME_7T_Pilot/MRIQC participant \
+--participant-label ${SUBJECT} --nprocs 8 --omp-nthreads 8
+
+
 ########################################
 #### To DO's
 '''
