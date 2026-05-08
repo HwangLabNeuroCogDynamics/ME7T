@@ -1,0 +1,132 @@
+{
+  "search_method": "fnmatch",
+  "descriptions": [
+
+    {
+      "datatype": "anat",
+      "suffix": "T1w",
+      "criteria": {
+        "SeriesNumber": 2,
+        "SeriesDescription": "*MP-RAGE*"
+      }
+    },
+
+    {
+      "datatype": "func",
+      "suffix": "bold",
+      "custom_entities": "task-rest_echo-1_part-mag",
+      "criteria": {
+        "ProtocolName": "*HyperMEPI*",
+        "SeriesNumber": {
+        "any": [700, 800]},
+        "EchoNumber": 1,
+        "ImageType": ["ORIGINAL","PRIMARY","OTHER","MAGNITUDE"]
+      }
+    },
+
+    {
+      "datatype": "func",
+      "suffix": "bold",
+      "custom_entities": "task-rest_echo-1_part-ph",
+      "criteria": {
+        "ProtocolName": "*HyperMEPI*",
+        "SeriesNumber": {
+        "any": [700, 800]},
+        "EchoNumber": 1,
+        "ImageType": ["ORIGINAL","PRIMARY","OTHER","PHASE"]
+      }
+    },
+
+    {
+      "datatype": "func",
+      "suffix": "bold",
+      "custom_entities": "task-rest_echo-1_part-real",
+      "criteria": {
+        "ProtocolName": "*HyperMEPI*",
+        "SeriesNumber": {
+        "any": [700, 800]},
+        "EchoNumber": 1,
+        "ImageType": ["ORIGINAL","PRIMARY","OTHER","REAL"]
+      }
+    },
+
+    {
+      "datatype": "func",
+      "suffix": "bold",
+      "custom_entities": "task-rest_echo-2_part-mag",
+      "criteria": {
+        "ProtocolName": "*HyperMEPI*",
+        "SeriesNumber": {
+        "any": [700, 800]},
+        "EchoNumber": 2,
+        "ImageType": ["ORIGINAL","PRIMARY","OTHER","MAGNITUDE"]
+      }
+    },
+
+    {
+      "datatype": "func",
+      "suffix": "bold",
+      "custom_entities": "task-rest_echo-2_part-ph",
+      "criteria": {
+        "ProtocolName": "*HyperMEPI*",
+        "SeriesNumber": {
+        "any": [700, 800]},
+        "EchoNumber": 2,
+        "ImageType": ["ORIGINAL","PRIMARY","OTHER","PHASE"]
+      }
+    },
+
+    {
+      "datatype": "func",
+      "suffix": "bold",
+      "custom_entities": "task-rest_echo-2_part-real",
+      "criteria": {
+        "ProtocolName": "*HyperMEPI*",
+        "SeriesNumber": {
+        "any": [700, 800]},
+        "EchoNumber": 2,
+        "ImageType": ["ORIGINAL","PRIMARY","OTHER","REAL"]
+      }
+    },
+
+    {
+      "datatype": "func",
+      "suffix": "bold",
+      "custom_entities": "task-rest_echo-3_part-mag",
+      "criteria": {
+        "ProtocolName": "*HyperMEPI*",
+        "SeriesNumber": {
+        "any": [700, 800]},
+        "EchoNumber": 3,
+        "ImageType": ["ORIGINAL","PRIMARY","OTHER","MAGNITUDE"]
+      }
+    },
+
+    {
+      "datatype": "func",
+      "suffix": "bold",
+      "custom_entities": "task-rest_echo-3_part-ph",
+      "criteria": {
+        "ProtocolName": "*HyperMEPI*",
+        "SeriesNumber": {
+        "any": [700, 800]},
+        "EchoNumber": 3,
+        "ImageType": ["ORIGINAL","PRIMARY","OTHER","PHASE"]
+      }
+    },
+
+    {
+      "datatype": "func",
+      "suffix": "bold",
+      "custom_entities": "task-rest_echo-3_part-real",
+      "criteria": {
+        "ProtocolName": "*HyperMEPI*",
+        "SeriesNumber": {
+        "any": [700, 800]},
+        "EchoNumber": 3,
+        "ImageType": ["ORIGINAL","PRIMARY","OTHER","REAL"]
+      }
+    }
+
+  ]
+}

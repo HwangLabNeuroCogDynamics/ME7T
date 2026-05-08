@@ -1,0 +1,84 @@
+{
+  "search_method": "fnmatch",
+  "descriptions": [
+
+    {
+      "datatype": "anat",
+      "suffix": "T1w",
+      "criteria": {
+        "SeriesNumber": 2,
+        "SeriesDescription": "*MP-RAGE*"
+      }
+    },
+
+    {
+      "datatype": "func",
+      "suffix": "bold",
+      "custom_entities": "task-rest_echo-1",
+      "criteria": {
+        "ProtocolName": "*HyperMEPI*",
+        "SeriesNumber": {
+        "any": [6, 8]},
+        "EchoNumber": 1
+      }
+    },
+
+
+    {
+      "datatype": "func",
+      "suffix": "bold",
+      "custom_entities": "task-rest_echo-2",
+      "criteria": {
+        "ProtocolName": "*HyperMEPI*",
+        "SeriesNumber": {
+        "any": [6, 8]},
+        "EchoNumber": 2      
+      }
+    },
+
+    {
+      "datatype": "func",
+      "suffix": "bold",
+      "custom_entities": "task-rest_echo-3",
+      "criteria": {
+        "ProtocolName": "*HyperMEPI*",
+        "SeriesNumber": {
+        "any": [6, 8]},
+        "EchoNumber": 3
+      }
+    },
+
+    {
+      "datatype": "func",
+      "suffix": "bold",
+      "custom_entities": "task-QT",
+      "criteria": {
+        "ProtocolName": "*HyperMEPI*",
+        "SeriesNumber": {
+        "any": [10]},
+        "ImageType": ["ORIGINAL","PRIMARY","OTHER","MAGNITUDE"]
+      }
+    },
+
+    {
+      "datatype": "fmap",
+      "suffix": "epi",
+      "custom_entities": "dir-pe0",
+      "criteria": {
+        "ProtocolName": "*HyperMEPI*",
+        "SeriesDescription": "SE EPI" 
+      }
+    },
+
+    {
+      "datatype": "fmap",
+      "suffix": "epi",
+      "custom_entities": "dir-pe1",
+      "criteria": {
+        "ProtocolName": "*HyperMEPI*",
+        "SeriesDescription": "SE EPI REVPE" 
+      }
+    }
+
+  ]
+}
