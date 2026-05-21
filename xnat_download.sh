@@ -2,13 +2,15 @@
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # - - - MODIFY THE VARIABLES BELOW!!!!
 user_id="kahwang" # hawk id of whoever is running the script
-zip_filename="20260406.zip" # will be date of MRI session
-cur_sub_id="20260406_TEST"
-RPACS_num="E106005" # you will have to log into XNAT to get this for each subject!!! 
+zip_filename="20260513.zip" # will be date of MRI session
+cur_sub_id="11020"
+RPACS_num="E107170" # you will have to log into XNAT to get this for each subject!!! 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # should be consistent across users
 #cd scripts/quantum7T/mri_scripts/
-project_name="QUANTUM_7T" #or HWANG_NET #
+project_name="VAM_DEV" #this has to be updated!
+
+## not here lss is actually not lss, but the local storage on samsara
 if [ -d /Volumes ]; then
     echo using Volumes as root folder
     rdss_root="/Volumes/rdss_kahwang/"
@@ -16,7 +18,7 @@ if [ -d /Volumes ]; then
 else
     echo using mnt as root folder
     rdss_root="/mnt/cifs/rdss/rdss_kahwang/"
-    lss_root="/data/backed_up/shared/Kai_WM/" #"/mnt/nfs/lss/lss_kahwang_hpc/"
+    lss_root="/data/backed_up/shared/ME_7T_Pilot/" #"/mnt/nfs/lss/lss_kahwang_hpc/"
 fi
 #argon_lss_root="/Shared/lss_kahwang_hpc/"
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -39,12 +41,12 @@ wget -O ${zip_filename} --user=${user_id} --ask-password https://rpacs.iibi.uiow
 
 #  File will have been downloaded to your downloads folder on Thalamege
 #  From the user home folder, move the file to the "originals" folder on rdss
-if [ -f ${rdss_root}Kai_WM/Data_MRI/Raw_dicoms/${zip_filename} ]; then
+if [ -f ${rdss_root}ME_7T_Pilot/Raw/${zip_filename} ]; then
     echo already copied .zip to rdss
 else
     echo copying .zip to rdss
     cd ~
-    mv ${zip_filename} ${rdss_root}Kai_WM/Data_MRI/Raw_dicoms/
+    mv ${zip_filename} ${rdss_root}ME_7T_Pilot/Raw/
     echo file moved to Raw_dicoms folder on rdss
     #  if permission denied, run the following line, enter thalamege/rdss password, and then re-run the script
     #  /usr/bin/kinit
@@ -53,11 +55,11 @@ fi
 if [ -f ${lss_root}Raw/${zip_filename} ]; then
     echo already copied .zip to argon
 else
-    echo copying .zip to argon
+    echo copying .zip to lss
     #  go to "originals" folder and copy the file to the MRI folder on thalamege
-    cd ${rdss_root}Kai_WM/Data_MRI/Raw_dicoms/
+    cd ${rdss_root}ME_7T_Pilot/Raw/
     cp ${zip_filename} ${lss_root}Raw/
-    echo file copied to Raw folder on argon
+    echo file copied to Raw folder on lss
 fi
 # if compgen -G "${lss_root}data/Quantum7T/CSVs/sub-${cur_sub_id}_*.csv" > /dev/null; then
 #     echo CSVs already copied to argon
