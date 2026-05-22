@@ -6,8 +6,8 @@
 #### first, run dcm2niix directly on dicom folders because we have had lots of trouble getting heudiconv to work.
 #### This should allow us to check dicom info and scan parameters necessary for later conversion
 ####################################################################################################################################
-SCANS_DIR="/data/backed_up/shared/ME_7T_Pilot/20260406/scans"
-OUT_DIR="/data/backed_up/shared/ME_7T_Pilot/20260406/nii_output"
+SCANS_DIR="/data/backed_up/shared/ME_7T_Pilot/Raw/11020/scans" #this is where the dicoms got expanded from zip
+OUT_DIR="/data/backed_up/shared/ME_7T_Pilot/Raw/11020/nii_output"
 
 mkdir -p "$OUT_DIR"
 
@@ -28,6 +28,7 @@ for run in "$SCANS_DIR"/*; do
     fi
 done
 
+### after this step, you need to examine the nii sidecar json files to properly construct a config file to be used in the enxt step
 
 ###############################################################################################################################################
 #### First do the BIDS conversion. We are no longer using heudiconv, it has trouble dealing with real/phase/magnitude plus multi echo data.
