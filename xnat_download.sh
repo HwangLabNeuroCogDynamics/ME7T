@@ -2,9 +2,9 @@
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # - - - MODIFY THE VARIABLES BELOW!!!!
 user_id="kahwang" # hawk id of whoever is running the script
-zip_filename="20260513.zip" # will be date of MRI session
-cur_sub_id="11020"
-RPACS_num="E107170" # you will have to log into XNAT to get this for each subject!!! 
+zip_filename="20260513b.zip" # will be date of MRI session
+cur_sub_id="20260513"
+RPACS_num="E107776" # you will have to log into XNAT to get this for each subject!!! 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # should be consistent across users
 #cd scripts/quantum7T/mri_scripts/
@@ -37,6 +37,8 @@ echo working on ${zip_filename}
 echo downloading file from XNAT
 cd ~
 wget -O ${zip_filename} --user=${user_id} --ask-password https://rpacs.iibi.uiowa.edu/xnat/data/projects/${project_name}/subjects/${cur_sub_id}/experiments/RPACS_${RPACS_num}/scans/ALL/files?format=zip
+# wget -O ${zip_filename} \ --user=${user_id} \ --ask-password \ "https://rpacs.iibi.uiowa.edu/xnat/data/experiments/RPACS_${RPACS_num}/scans/ALL/files?format=zip"
+
 #fi
 
 #  File will have been downloaded to your downloads folder on Thalamege
