@@ -195,6 +195,10 @@ cp -r /data/backed_up/shared/ME_7T_Pilot/BIDS/sub-${SUBJECT}/fmap/ /data/backed_
 ####################################################################################################################################
 rm ${OUT_DIR}/*.nii #only outputs we want are in .nii.gz
 
+######
+### important, remember to add "IntendedFor" fields to the fmap json files before running fmriprep.
+######
+
 SUBJECT="11020"
 fmriprep_container=/data/backed_up/shared/software/containers/fmriprep_latest.sif
 apptainer exec \
