@@ -15,7 +15,8 @@ for run in "$SCANS_DIR"/*; do
     [ -d "$run" ] || continue
 
     dicom_dir="$run/resources/DICOM/files"
-
+    #dicom_dir="$run/" #this is for manual copy of zipped dicoms
+    
     if [ -d "$dicom_dir" ]; then
         run_name=$(basename "$run")
         run_out="$OUT_DIR/$run_name"
@@ -34,7 +35,7 @@ done
 #### First do the BIDS conversion. We are no longer using heudiconv, it has trouble dealing with real/phase/magnitude plus multi echo data.
 #### Intead we now use dcm2bids. 
 #############################################################################################################################################
-SUBJECT="20260406"
+SUBJECT="11020"
 PROJECT=/data/backed_up/shared/ME_7T_Pilot/
 mkdir -p $PROJECT/BIDS
 mkdir -p $PROJECT/code
@@ -54,22 +55,24 @@ apptainer exec \
   --bind /home:/home \
   /data/backed_up/shared/software/containers/dcm2bids.sif \
   dcm2bids \
-    -d /data/backed_up/shared/ME_7T_Pilot/${SUBJECT}/scans/* \
-    -p ${SUBJECT}nordic \
-    -c /home/kahwang/bin/ME7T/me7T0604_NORDIC_config.json \
+    -d /data/backed_up/shared/ME_7T_Pilot/Raw/${SUBJECT}/scans/* \
+    -p ${SUBJECT} \
+    -c /home/kahwang/bin/ME7T/me7T_11020_config.json \
     -o /data/backed_up/shared/ME_7T_Pilot/BIDS \
     --clobber --force_dcm2bids
 
 # so we get a copy of the config
-cp /home/kahwang/bin/ME7T/me7T0604_NORDIC_config.json $PROJECT/code/
+cp /home/kahwang/bin/ME7T/me7T_11020_config.json $PROJECT/code/
 
+
+### 
 # looks like after this part bval bvec have to be deleted or fMRIPREP will complain
-
+# but given we are recreating BIDS after NORDIC, should be ok?
 
 ####################################################################################################################################
 ### Then we need to deal with the real/imag data, rename them according the MX's script, and process them throguh nordic
 ####################################################################################################################################
-SUBJECT="20260406nordic"
+SUBJECT="11020"
 RUN_DIR="/data/backed_up/shared/ME_7T_Pilot/BIDS/sub-${SUBJECT}/func/"
 OUT_DIR="/data/backed_up/shared/ME_7T_Pilot/BIDS_NORDIC/sub-${SUBJECT}/func/"
 NORDIC_PATH="/data/backed_up/shared/software/NORDIC_Raw"
@@ -80,9 +83,9 @@ mkdir -p "$OUT_DIR"
 # Then, add this maxNumCompThreads(24); to the startup.m file to prevent overthreading. 
 
 # Base filename
-BASE_rest="sub-${SUBJECT}_task-rest"
+BASE_rest="sub-${SUBJECT}_task-HCC"
 BASE_noise="sub-${SUBJECT}_task-noise"
-for run in 01 02
+for run in 03 04
 do
   echo "=== Processing run $run ==="
   for echo in 1 2 3
@@ -105,11 +108,11 @@ do
       3dcalc -prefix "${output_abs}" -cx2r ABS -a "${output_cpx}" -expr 'a' -overwrite
 
       #now do for noise    
-      input_real="${RUN_DIR}/${BASE_noise}_run-${run}_echo-${echo}_part-real_bold.nii.gz"
-      input_imag="${RUN_DIR}/${BASE_noise}_run-${run}_echo-${echo}_part-ph_bold.nii.gz"
-      output_cpx="${OUT_DIR}/${BASE_noise}_run-${run}_e${echo}_complex.nii"
-      output_phase="${OUT_DIR}/${BASE_noise}_run-${run}_e${echo}_phase.nii"
-      output_abs="${OUT_DIR}/${BASE_noise}_run-${run}_e${echo}_mag.nii"
+      #input_real="${RUN_DIR}/${BASE_noise}_run-${run}_echo-${echo}_part-real_bold.nii.gz"
+      #input_imag="${RUN_DIR}/${BASE_noise}_run-${run}_echo-${echo}_part-ph_bold.nii.gz"
+      #output_cpx="${OUT_DIR}/${BASE_noise}_run-${run}_e${echo}_complex.nii"
+      #output_phase="${OUT_DIR}/${BASE_noise}_run-${run}_e${echo}_phase.nii"
+      #output_abs="${OUT_DIR}/${BASE_noise}_run-${run}_e${echo}_mag.nii"
 
       # 1. Create complex image
       3dTwotoComplex -prefix "${output_cpx}" -RI "${input_real}" "${input_imag}" -overwrite
@@ -148,18 +151,26 @@ done
 # Now Run NORDIC
 # see https://github.com/SteenMoeller/NORDIC_Raw/blob/main/NIFTI_NORDIC.m
 ####################################################################################################################################
-for run in 01 02
+for run in 01 02 03 04
 do
   echo "=== Processing run $run ==="
   for echo in 1 2 3
   do
       echo "=== Processing echo $echo ==="
       # sub-HYPEREPI2b_task-rest_run-02_echo-3_part-mag_bold.nii.gz
-      combined_phase="${OUT_DIR}/${BASE_rest}_run-${run}_e${echo}_combined_phase.nii" 
-      combined_abs="${OUT_DIR}/${BASE_rest}_run-${run}_e${echo}_combined_mag.nii"         
+      
+      # if you have noise data, use these
+      #combined_phase="${OUT_DIR}/${BASE_rest}_run-${run}_e${echo}_combined_phase.nii" 
+      #combined_abs="${OUT_DIR}/${BASE_rest}_run-${run}_e${echo}_combined_mag.nii"         
+      
+      # if you don't have noise data, use theses
+      combined_phase="${OUT_DIR}/${BASE_rest}_run-${run}_e${echo}_phase.nii" 
+      combined_abs="${OUT_DIR}/${BASE_rest}_run-${run}_e${echo}_mag.nii"  
+
       output_nordic="${BASE_rest}_run-${run}_echo-${echo}_part-mag_bold"
 
-      matlab -batch "addpath('${NORDIC_PATH}'); ARG.DIROUT='${OUT_DIR}'; ARG.noise_volume_last=6 ; NIFTI_NORDIC('${combined_abs}','${combined_phase}','${output_nordic}', ARG); exit"
+      #for subjects with no noise scan, use   ARG.noise_volume_last=0, otherwise ARG.noise_volume_last=6
+      matlab -batch "addpath('${NORDIC_PATH}'); ARG.DIROUT='${OUT_DIR}'; ARG.noise_volume_last=0 ; NIFTI_NORDIC('${combined_abs}','${combined_phase}','${output_nordic}', ARG); exit"
 
       # Copy JSON from original magnitude echo
       # sub-HYPEREPI2b_task-rest_run-02_echo-3_part-mag_bold.json
@@ -180,10 +191,11 @@ cp -r /data/backed_up/shared/ME_7T_Pilot/BIDS/sub-${SUBJECT}/fmap/ /data/backed_
 ####################################################################################################################################
 # the new BIDS_NORDIC folder should now be ready for fmriprep.
 # https://fmriprep.org/en/stable/usage.html
+# https://mriqc.readthedocs.io/en/latest/
 ####################################################################################################################################
 rm ${OUT_DIR}/*.nii #only outputs we want are in .nii.gz
 
-SUBJECT="20260406nordic"
+SUBJECT="11020"
 fmriprep_container=/data/backed_up/shared/software/containers/fmriprep_latest.sif
 apptainer exec \
 --bind /data/backed_up/shared:/data/backed_up/shared \
@@ -204,12 +216,13 @@ participant --participant_label ${SUBJECT} \
 
 
 # MRIQC
-SUBJECT="20260406nordic"
+SUBJECT="11020"
 mriqc_container=/data/backed_up/shared/software/containers/mriqc_latest.sif
 apptainer exec \
 --bind /data/backed_up/shared:/data/backed_up/shared \
 ${mriqc_container} \
 mriqc /data/backed_up/shared/ME_7T_Pilot/BIDS_NORDIC /data/backed_up/shared/ME_7T_Pilot/MRIQC participant \
+-w /data/backed_up/shared/ME_7T_Pilot/work \
 --participant-label ${SUBJECT} --nprocs 8 --omp-nthreads 8
 
 

@@ -35,3 +35,37 @@ do
     done
 
 done
+
+
+
+#!/bin/bash
+
+# ============================================================
+# Download one ZIP per scan from RPACS/XNAT
+# ============================================================
+
+USER="kahwang"
+EXP="RPACS_E107776"
+BASE="https://rpacs.iibi.uiowa.edu/xnat"
+
+OUTDIR="${EXP}_zips"
+
+mkdir -p "${OUTDIR}"
+
+for SCAN in 600 700 800 900
+do
+
+    ZIPFILE="${OUTDIR}/scan_${SCAN}.zip"
+
+    echo "======================================="
+    echo "Downloading scan ${SCAN}"
+    echo "Output: ${ZIPFILE}"
+    echo "======================================="
+
+    wget \
+        --netrc \
+        -c \
+        -O "${ZIPFILE}" \
+        "${BASE}/data/experiments/${EXP}/scans/${SCAN}/resources/DICOM/files?format=zip"
+
+done
