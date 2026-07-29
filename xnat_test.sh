@@ -1,23 +1,27 @@
 # #!/bin/bash
 
-EXP="RPACS_E109440"
+set -e
+EXP="RPACS_E111394"
 BASE="https://rpacs.iibi.uiowa.edu/xnat"
 
-SUB=11075
+SUB=11074
 DEST="/data/backed_up/shared/ME_7T_Pilot/Raw/${SUB}"
+# where to save tmp zip files
+TMPROOT="/data/backed_up/shared/ME_7T_Pilot/tmp"
+mkdir -p "${TMPROOT}"
 
-# USE this to select which scan folder to download, check on xnat and can skip the not important ones (localizers)
-#SCANS=( 2 4 5 6 7 8 9 10 11 12 13 14 1000 1100 1200 1300 1400)
+# you can go onto XNAT to see what runs you want to download, to skip things we dont need (localizer, etc)
+SCANS=(2 19 20 800 900 1000 1100 1200 1300 1400 1500 1600 1700 1800 2100)
 
-SCANS=(1000 1100 1200 1300 1400)
-for SCAN in "${SCANS[@]}"
-do
-    SCANDIR="${DEST}/scans/${SCAN}/"
-    mkdir -p "${SCANDIR}"
 
-    ZIPFILE="${SCANDIR}/DICOM.zip"
-
+for SCAN in "${SCANS[@]}"; do
     echo "Downloading scan ${SCAN}"
+
+    RUNDIR="${DEST}/run-${SCAN}"
+    mkdir -p "${RUNDIR}"
+
+    TMPDIR="$(mktemp -d "${TMPROOT}/xnat_${SUB}_${SCAN}_XXXXXX")"
+    ZIPFILE="${TMPDIR}/DICOM.zip"
 
     wget \
         --netrc \
@@ -25,12 +29,36 @@ do
         -O "${ZIPFILE}" \
         "${BASE}/data/experiments/${EXP}/scans/${SCAN}/resources/DICOM/files?format=zip"
 
-    unzip -q "${ZIPFILE}" -d "${SCANDIR}"
+    # Look at the ZIP contents and find one file under the DICOM files directory
+    ENTRY="$(unzip -Z1 "${ZIPFILE}" | grep '/resources/DICOM/files/' | head -n 1 || true)"
 
+    if [[ -z "${ENTRY}" ]]; then
+        echo "ERROR: Could not find DICOM files path in scan ${SCAN}"
+        rm -rf "${TMPDIR}"
+        exit 1
+    fi
+
+    # ENTRY example:
+    # scans/19/resources/DICOM/files/IM-0001-0001.dcm
+    # SERIESDIR becomes:
+    # scans/19
+    SERIESDIR="${ENTRY%/resources/DICOM/files/*}"
+    SERIESNAME="${SERIESDIR##*/}"
+
+    unzip -q "${ZIPFILE}" -d "${TMPDIR}"
+
+    if [[ ! -d "${TMPDIR}/${SERIESDIR}/resources/DICOM/files" ]]; then
+        echo "ERROR: Missing DICOM files directory for scan ${SCAN}"
+        echo "Expected: ${TMPDIR}/${SERIESDIR}/resources/DICOM/files"
+        rm -rf "${TMPDIR}"
+        exit 1
+    fi
+
+    mv "${TMPDIR}/${SERIESDIR}/resources/DICOM/files" "${RUNDIR}/${SERIESNAME}"
+
+    rm -rf "${TMPDIR}"
 done
 
-    # Uncomment if you don't want to keep the zip
-    # rm "${ZIPFILE}"
 
 
 
