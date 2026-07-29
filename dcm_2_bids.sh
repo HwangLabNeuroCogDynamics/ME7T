@@ -1,10 +1,13 @@
 #!/usr/bin/env bash
+### complete script to preprocess 7T ME-NORDIC data. Assuming you already downloaded it with xnat_test.sh
+
 
 # note, pluma is the gedit alternative on samsara
+# the new data are in /data/backed_up/shared/ME_7T_Pilot/
+# Raw is the raw data folder
+# We also have BIDS, fMRIprep, and MRIQC there
 
-# the new data are in /data/backed_up/shared/ME_7T_Pilot/Raw/11075/
-
-####################################################################################################################################
+###### Step 1. ####################################################################################################################
 #### Run dcm2niix directly on each series folder to inspect sidecar JSON files
 #### This should allow us to check dicom info and scan parameters necessary for later conversion
 #### if you are confident your config files are correct, you can skip this part. 
@@ -30,9 +33,11 @@ for series_dir in "${RAW_DIR}"/run-*/*; do
 done
 ### after this step, you need to examine the nii sidecar json files to properly construct a config file to be used in the enxt step
 
-###############################################################################################################################################
-#### First do the BIDS conversion. We are no longer using heudiconv, it has trouble dealing with real/phase/magnitude plus multi echo data.
-#### Intead we now use dcm2bids. 
+###### Step 2. ###################################################################################################################################
+## Then do the BIDS conversion. We are no longer using heudiconv, it has trouble dealing with real/phase/magnitude plus multi echo data.
+## Intead we now use dcm2bids.  https://unfmontreal.github.io/Dcm2Bids/3.2.0/
+### Instead of heurstics, it uses json config to figure out the conversion. You can look at my examples: https://github.com/HwangLabNeuroCogDynamics/ME7T/blob/main/me7T_11075_config.json
+## or check their online documentation.
 #############################################################################################################################################
 
 mkdir -p $PROJECT/BIDS
@@ -63,8 +68,9 @@ cp /home/kahwang/bin/ME7T/me7T_11075_config.json $PROJECT/code/
 # looks like after this part bval bvec have to be deleted or fMRIPREP will complain
 # but given we are recreating BIDS after NORDIC, should be ok?
 
-####################################################################################################################################
+### step 3. ###########################################################################################################################
 ### Then we need to deal with the real/imag data, rename them according the MX's script, and process them throguh nordic
+# note for several subjects we dont have noise scans. 
 ####################################################################################################################################
 SUBJECT="11075"
 RUN_DIR="/data/backed_up/shared/ME_7T_Pilot/BIDS/sub-${SUBJECT}/func/"
@@ -103,7 +109,10 @@ do
       # 3. Extract magnitude
       3dcalc -prefix "${output_abs}" -cx2r ABS -a "${output_cpx}" -expr 'a' -overwrite
 
-      #now do for noise    
+
+      ##############################   
+      # Below is for do the conversion for noise scans. 
+      ####################################    
       #input_real_noise="${RUN_DIR}/${BASE_noise}_run-${run}_echo-${echo}_part-real_bold.nii.gz"
       #input_imag_noise="${RUN_DIR}/${BASE_noise}_run-${run}_echo-${echo}_part-ph_bold.nii.gz"
       #output_cpx_noise="${OUT_DIR}/${BASE_noise}_run-${run}_e${echo}_complex.nii"
@@ -119,7 +128,7 @@ do
   done
 done
 
-####################################################################################################################################
+### Step 4. if we have noise scans #################################################################################################
 # now we attach the noise images to the end of the mag and phase data, and set noise-volume numbers in the matlab call.
 # this will get empirical measured noise, otherwise nordic will default to 1
 ####################################################################################################################################
@@ -143,7 +152,7 @@ done
 #   done
 # done
 
-####################################################################################################################################
+### step 5. ########################################################################################################################
 # Now Run NORDIC
 # see https://github.com/SteenMoeller/NORDIC_Raw/blob/main/NIFTI_NORDIC.m
 ####################################################################################################################################
@@ -188,7 +197,7 @@ cp -r /data/backed_up/shared/ME_7T_Pilot/BIDS/sub-${SUBJECT}/anat/ /data/backed_
 cp -r /data/backed_up/shared/ME_7T_Pilot/BIDS/sub-${SUBJECT}/fmap/ /data/backed_up/shared/ME_7T_Pilot/BIDS_NORDIC/sub-${SUBJECT}/fmap/
 
 
-###### IMPORTANT!! ##################################################################################################################
+###### Step 6. Important! ##################################################################################################################
 ### important, remember to add "IntendedFor" fields to the fmap json files before running fmriprep.
 ##########################################################################################################################################
 SUBJECT=11075
@@ -213,7 +222,7 @@ for json in "${FMAP_DIR}"/*.json; do
     echo "Updated ${json}"
 done
 
-####################################################################################################################################
+### Step 7. #########################################################################################################################
 # the new BIDS_NORDIC folder should now be ready for fmriprep.
 # https://fmriprep.org/en/stable/usage.html
 # https://mriqc.readthedocs.io/en/latest/
