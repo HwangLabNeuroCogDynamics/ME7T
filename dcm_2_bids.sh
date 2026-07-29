@@ -40,6 +40,7 @@ done
 ## Intead we now use dcm2bids.  https://unfmontreal.github.io/Dcm2Bids/3.2.0/
 ### Instead of heurstics, it uses json config to figure out the conversion. You can look at my examples: https://github.com/HwangLabNeuroCogDynamics/ME7T/blob/main/me7T_11075_config.json
 ## or check their online documentation.
+## This part could take 1 day.... 
 #############################################################################################################################################
 
 mkdir -p $PROJECT/BIDS
@@ -228,6 +229,7 @@ done
 # the new BIDS_NORDIC folder should now be ready for fmriprep.
 # https://fmriprep.org/en/stable/usage.html
 # https://mriqc.readthedocs.io/en/latest/
+# this can take 1 to 2 days.
 ####################################################################################################################################
 
 
