@@ -1,0 +1,141 @@
+{
+  "search_method": "fnmatch",
+  "descriptions": [
+
+    {
+      "datatype": "anat",
+      "suffix": "T1w",
+      "criteria": {
+        "SeriesNumber": 2,
+        "SeriesDescription": "*MP-RAGE*"
+      }
+    },
+
+    {
+      "datatype": "func",
+      "suffix": "bold",
+      "custom_entities": "task-HCC_echo-1_part-mag",
+      "criteria": {
+        "SeriesNumber": {
+        "any": [1000, 1100, 1200, 1300, 1400]},
+        "EchoNumber": 1,
+        "ImageType": ["ORIGINAL","PRIMARY","OTHER","MAGNITUDE"]
+      }
+    },
+
+    {
+      "datatype": "func",
+      "suffix": "bold",
+      "custom_entities": "task-HCC_echo-1_part-ph",
+      "criteria": {
+        "SeriesNumber": {
+        "any": [1000, 1100, 1200, 1300, 1400]},
+        "EchoNumber": 1,
+        "ImageType": ["ORIGINAL","PRIMARY","OTHER","IMAGINARY"]
+      }
+    },
+
+    {
+      "datatype": "func",
+      "suffix": "bold",
+      "custom_entities": "task-HCC_echo-1_part-real",
+      "criteria": {
+        "SeriesNumber": {
+        "any": [1000, 1100, 1200, 1300, 1400]},
+        "EchoNumber": 1,
+        "ImageType": ["ORIGINAL","PRIMARY","OTHER","REAL"]
+      }
+    },
+
+    {
+      "datatype": "func",
+      "suffix": "bold",
+      "custom_entities": "task-HCC_echo-2_part-mag",
+      "criteria": {
+        "SeriesNumber": {
+        "any": [1000, 1100, 1200, 1300, 1400]},
+        "EchoNumber": 2,
+        "ImageType": ["ORIGINAL","PRIMARY","OTHER","MAGNITUDE"]
+      }
+    },
+
+    {
+      "datatype": "func",
+      "suffix": "bold",
+      "custom_entities": "task-HCC_echo-2_part-ph",
+      "criteria": {
+        "SeriesNumber": {
+        "any": [1000, 1100, 1200, 1300, 1400]},
+        "EchoNumber": 2,
+        "ImageType": ["ORIGINAL","PRIMARY","OTHER","IMAGINARY"]
+      }
+    },
+
+    {
+      "datatype": "func",
+      "suffix": "bold",
+      "custom_entities": "task-HCC_echo-2_part-real",
+      "criteria": {
+        "SeriesNumber": {
+        "any": [1000, 1100, 1200, 1300, 1400]},
+        "EchoNumber": 2,
+        "ImageType": ["ORIGINAL","PRIMARY","OTHER","REAL"]
+      }
+    },
+
+    {
+      "datatype": "func",
+      "suffix": "bold",
+      "custom_entities": "task-HCC_echo-3_part-mag",
+      "criteria": {
+        "SeriesNumber": {
+        "any": [1000, 1100, 1200, 1300, 1400]},
+        "EchoNumber": 3,
+        "ImageType": ["ORIGINAL","PRIMARY","OTHER","MAGNITUDE"]
+      }
+    },
+
+    {
+      "datatype": "func",
+      "suffix": "bold",
+      "custom_entities": "task-HCC_echo-3_part-ph",
+      "criteria": {
+        "SeriesNumber": {
+        "any": [1000, 1100, 1200, 1300, 1400]},
+        "EchoNumber": 3,
+        "ImageType": ["ORIGINAL","PRIMARY","OTHER","IMAGINARY"]
+      }
+    },
+
+    {
+      "datatype": "func",
+      "suffix": "bold",
+      "custom_entities": "task-HCC_echo-3_part-real",
+      "criteria": {
+        "SeriesNumber": {
+        "any": [1000, 1100, 1200, 1300, 1400]},
+        "EchoNumber": 3,
+        "ImageType": ["ORIGINAL","PRIMARY","OTHER","REAL"]
+      }
+    },
+
+    {
+      "datatype": "fmap",
+      "suffix": "epi",
+      "custom_entities": "dir-pe0",
+      "criteria": {
+        "SeriesDescription": "SE EPI" 
+      }
+    },
+
+    {
+      "datatype": "fmap",
+      "suffix": "epi",
+      "custom_entities": "dir-pe1",
+      "criteria": {
+        "SeriesDescription": "SE EPI REVPE" 
+      }
+    }
+
+  ]
+}
