@@ -1,18 +1,20 @@
 # #!/bin/bash
+### the latest XNAT download script. Note for our 7T ME/NORDIC data, this could take up to TWO DAYS.
 
-set -e
+
+###### 1. log on to XNAT to check the pracs number and subject ID you want to download
 EXP="RPACS_E111394"
 BASE="https://rpacs.iibi.uiowa.edu/xnat"
-
 SUB=11074
 DEST="/data/backed_up/shared/ME_7T_Pilot/Raw/${SUB}"
 # where to save tmp zip files
 TMPROOT="/data/backed_up/shared/ME_7T_Pilot/tmp"
 mkdir -p "${TMPROOT}"
 
-# you can go onto XNAT to see what runs you want to download, to skip things we dont need (localizer, etc)
+###### 2. also on XNAT, note the series/runs you want to download.
+# You can just enter the ones you want and skip things we dont need (localizer, etc)
 SCANS=(2 19 20 800 900 1000 1100 1200 1300 1400 1500 1600 1700 1800 2100)
-
+# if notice any scans are missing, email Vince. They have to reconstruct our data offline given the size of our acquisition
 
 for SCAN in "${SCANS[@]}"; do
     echo "Downloading scan ${SCAN}"
@@ -38,6 +40,8 @@ for SCAN in "${SCANS[@]}"; do
         exit 1
     fi
 
+
+    #### below is to reorganize data to something easier to navigate
     # ENTRY example:
     # scans/19/resources/DICOM/files/IM-0001-0001.dcm
     # SERIESDIR becomes:
