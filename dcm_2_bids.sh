@@ -2,67 +2,61 @@
 
 # note, pluma is the gedit alternative on samsara
 
+# the new data are in /data/backed_up/shared/ME_7T_Pilot/Raw/11075/
+
 ####################################################################################################################################
-#### first, run dcm2niix directly on dicom folders because we have had lots of trouble getting heudiconv to work.
+#### Run dcm2niix directly on each series folder to inspect sidecar JSON files
 #### This should allow us to check dicom info and scan parameters necessary for later conversion
+#### if you are confident your config files are correct, you can skip this part. 
 ####################################################################################################################################
-SCANS_DIR="/data/backed_up/shared/ME_7T_Pilot/Raw/11020/scans" #this is where the dicoms got expanded from zip
-OUT_DIR="/data/backed_up/shared/ME_7T_Pilot/Raw/11020/nii_output"
+SUBJECT="11074"
+PROJECT="/data/backed_up/shared/ME_7T_Pilot"
+RAW_DIR="${PROJECT}/Raw/${SUBJECT}"
+OUT_DIR="${RAW_DIR}/nii_output" #where dicoms are expanded into
 
-mkdir -p "$OUT_DIR"
+mkdir -p "${OUT_DIR}"
 
-for run in "$SCANS_DIR"/*; do
-    [ -d "$run" ] || continue
+for series_dir in "${RAW_DIR}"/run-*/*; do
+    [ -d "${series_dir}" ] || continue
 
-    dicom_dir="$run/resources/DICOM/files"
-    #dicom_dir="$run/" #this is for manual copy of zipped dicoms
-    
-    if [ -d "$dicom_dir" ]; then
-        run_name=$(basename "$run")
-        run_out="$OUT_DIR/$run_name"
+    run_name="$(basename "$(dirname "${series_dir}")")"
+    series_name="$(basename "${series_dir}")"
+    run_out="${OUT_DIR}/${run_name}_${series_name}"
 
-        mkdir -p "$run_out"
-        echo "Converting $run_name ..."
-        dcm2niix -o "$run_out" "$dicom_dir"
-    else
-        echo "Skipping $run (no DICOM folder found)"
-    fi
+    mkdir -p "${run_out}"
+
+    echo "Converting ${run_name}/${series_name} ..."
+    dcm2niix -o "${run_out}" "${series_dir}"
 done
-
 ### after this step, you need to examine the nii sidecar json files to properly construct a config file to be used in the enxt step
 
 ###############################################################################################################################################
 #### First do the BIDS conversion. We are no longer using heudiconv, it has trouble dealing with real/phase/magnitude plus multi echo data.
 #### Intead we now use dcm2bids. 
 #############################################################################################################################################
-SUBJECT="11020"
-PROJECT=/data/backed_up/shared/ME_7T_Pilot/
+
 mkdir -p $PROJECT/BIDS
 mkdir -p $PROJECT/code
 
-# in terminal, do pluma $PROJECT/code/dcm2bids_config.json
-#".*MP-RAGE.*"
-
-CONTAINER=/data/backed_up/shared/software/containers/dcm2bids.sif
-#CONFIG=$PROJECT/code/dcm2bids_config.json
-HOST_DCM2NIIX=/data/backed_up/shared/software/dcm2niix
-#mkdir -p /data/backed_up/shared/ME_7T_Pilot/BIDS
+CONTAINER="/data/backed_up/shared/software/containers/dcm2bids.sif"
+HOST_DCM2NIIX="/data/backed_up/shared/software/dcm2niix"
+CONFIG="${PROJECT}/code/me7T_11075_config.json"
 # note, the dcm2niix binary in dcm2bids's container is old so we need to bind our own
 
 apptainer exec \
-  --bind "$HOST_DCM2NIIX":/usr/bin/dcm2niix \
+  --bind "${HOST_DCM2NIIX}":/usr/bin/dcm2niix \
   --bind /data/backed_up/shared:/data/backed_up/shared \
   --bind /home:/home \
-  /data/backed_up/shared/software/containers/dcm2bids.sif \
+  "${CONTAINER}" \
   dcm2bids \
-    -d /data/backed_up/shared/ME_7T_Pilot/Raw/${SUBJECT}/scans/* \
-    -p ${SUBJECT} \
-    -c /home/kahwang/bin/ME7T/me7T_11020_config.json \
-    -o /data/backed_up/shared/ME_7T_Pilot/BIDS \
+    -d "${RAW_DIR}"/run-*/* \
+    -p "${SUBJECT}" \
+    -c "${CONFIG}" \
+    -o "${PROJECT}/BIDS" \
     --clobber --force_dcm2bids
 
 # so we get a copy of the config
-cp /home/kahwang/bin/ME7T/me7T_11020_config.json $PROJECT/code/
+cp /home/kahwang/bin/ME7T/me7T_11075_config.json $PROJECT/code/
 
 
 ### 
@@ -72,8 +66,10 @@ cp /home/kahwang/bin/ME7T/me7T_11020_config.json $PROJECT/code/
 ####################################################################################################################################
 ### Then we need to deal with the real/imag data, rename them according the MX's script, and process them throguh nordic
 ####################################################################################################################################
-SUBJECT="11020"
+SUBJECT="11075"
 RUN_DIR="/data/backed_up/shared/ME_7T_Pilot/BIDS/sub-${SUBJECT}/func/"
+
+# We are creating a separat BIDS folder that has real/imag data for NORDIC
 OUT_DIR="/data/backed_up/shared/ME_7T_Pilot/BIDS_NORDIC/sub-${SUBJECT}/func/"
 NORDIC_PATH="/data/backed_up/shared/software/NORDIC_Raw"
 mkdir -p "$OUT_DIR"
@@ -85,7 +81,7 @@ mkdir -p "$OUT_DIR"
 # Base filename
 BASE_rest="sub-${SUBJECT}_task-HCC"
 BASE_noise="sub-${SUBJECT}_task-noise"
-for run in 03 04
+for run in 01 02 03 04 05; 
 do
   echo "=== Processing run $run ==="
   for echo in 1 2 3
@@ -108,18 +104,18 @@ do
       3dcalc -prefix "${output_abs}" -cx2r ABS -a "${output_cpx}" -expr 'a' -overwrite
 
       #now do for noise    
-      #input_real="${RUN_DIR}/${BASE_noise}_run-${run}_echo-${echo}_part-real_bold.nii.gz"
-      #input_imag="${RUN_DIR}/${BASE_noise}_run-${run}_echo-${echo}_part-ph_bold.nii.gz"
-      #output_cpx="${OUT_DIR}/${BASE_noise}_run-${run}_e${echo}_complex.nii"
-      #output_phase="${OUT_DIR}/${BASE_noise}_run-${run}_e${echo}_phase.nii"
-      #output_abs="${OUT_DIR}/${BASE_noise}_run-${run}_e${echo}_mag.nii"
+      #input_real_noise="${RUN_DIR}/${BASE_noise}_run-${run}_echo-${echo}_part-real_bold.nii.gz"
+      #input_imag_noise="${RUN_DIR}/${BASE_noise}_run-${run}_echo-${echo}_part-ph_bold.nii.gz"
+      #output_cpx_noise="${OUT_DIR}/${BASE_noise}_run-${run}_e${echo}_complex.nii"
+      #output_phase_noise="${OUT_DIR}/${BASE_noise}_run-${run}_e${echo}_phase.nii"
+      #output_abs_noise="${OUT_DIR}/${BASE_noise}_run-${run}_e${echo}_mag.nii"
 
       # 1. Create complex image
-      3dTwotoComplex -prefix "${output_cpx}" -RI "${input_real}" "${input_imag}" -overwrite
+      #3dTwotoComplex -prefix "${output_cpx_noise}" -RI "${input_real_noise}" "${input_imag_noise}" -overwrite
       # 2. Extract phase
-      3dcalc -prefix "${output_phase}" -cx2r PHASE -a "${output_cpx}" -expr 'a' -overwrite
+      #3dcalc -prefix "${output_phase_noise}" -cx2r PHASE -a "${output_cpx_noise}" -expr 'a' -overwrite
       # 3. Extract magnitude
-      3dcalc -prefix "${output_abs}" -cx2r ABS -a "${output_cpx}" -expr 'a' -overwrite
+      #3dcalc -prefix "${output_abs_noise}" -cx2r ABS -a "${output_cpx_noise}" -expr 'a' -overwrite
   done
 done
 
@@ -127,31 +123,31 @@ done
 # now we attach the noise images to the end of the mag and phase data, and set noise-volume numbers in the matlab call.
 # this will get empirical measured noise, otherwise nordic will default to 1
 ####################################################################################################################################
-for run in 01 02
-do
-  echo "=== Processing run $run ==="
-  for echo in 1 2 3
-  do
-      echo "=== Processing echo $echo ==="
-      #output_cpx="${OUT_DIR}/${BASE_rest}_run-${run}_e${echo}_complex.nii"
-      output_phase="${OUT_DIR}/${BASE_rest}_run-${run}_e${echo}_phase.nii"
-      output_abs="${OUT_DIR}/${BASE_rest}_run-${run}_e${echo}_mag.nii"
-      #noise_cpx="${OUT_DIR}/${BASE_noise}_run-${run}_e${echo}_complex.nii"
-      noise_phase="${OUT_DIR}/${BASE_noise}_run-${run}_e${echo}_phase.nii"
-      noise_abs="${OUT_DIR}/${BASE_noise}_run-${run}_e${echo}_mag.nii"
-      #combined_cpx=="${OUT_DIR}/${BASE_rest}_run-${run}_e${echo}_combined_complex.nii"
-      combined_phase="${OUT_DIR}/${BASE_rest}_run-${run}_e${echo}_combined_phase.nii" 
-      combined_abs="${OUT_DIR}/${BASE_rest}_run-${run}_e${echo}_combined_mag.nii"             
-      3dTcat -prefix "${combined_abs}" "${output_abs}" "${noise_abs}" 
-      3dTcat -prefix "${combined_phase}" "${output_phase}" "${noise_phase}" 
-  done
-done
+# for run in 01 02
+# do
+#   echo "=== Processing run $run ==="
+#   for echo in 1 2 3
+#   do
+#       echo "=== Processing echo $echo ==="
+#       #output_cpx="${OUT_DIR}/${BASE_rest}_run-${run}_e${echo}_complex.nii"
+#       output_phase="${OUT_DIR}/${BASE_rest}_run-${run}_e${echo}_phase.nii"
+#       output_abs="${OUT_DIR}/${BASE_rest}_run-${run}_e${echo}_mag.nii"
+#       #noise_cpx="${OUT_DIR}/${BASE_noise}_run-${run}_e${echo}_complex.nii"
+#       noise_phase="${OUT_DIR}/${BASE_noise}_run-${run}_e${echo}_phase.nii"
+#       noise_abs="${OUT_DIR}/${BASE_noise}_run-${run}_e${echo}_mag.nii"
+#       #combined_cpx=="${OUT_DIR}/${BASE_rest}_run-${run}_e${echo}_combined_complex.nii"
+#       combined_phase="${OUT_DIR}/${BASE_rest}_run-${run}_e${echo}_combined_phase.nii" 
+#       combined_abs="${OUT_DIR}/${BASE_rest}_run-${run}_e${echo}_combined_mag.nii"             
+#       3dTcat -prefix "${combined_abs}" "${output_abs}" "${noise_abs}" 
+#       3dTcat -prefix "${combined_phase}" "${output_phase}" "${noise_phase}" 
+#   done
+# done
 
 ####################################################################################################################################
 # Now Run NORDIC
 # see https://github.com/SteenMoeller/NORDIC_Raw/blob/main/NIFTI_NORDIC.m
 ####################################################################################################################################
-for run in 01 02 03 04
+for run in 01 02 03 04 05
 do
   echo "=== Processing run $run ==="
   for echo in 1 2 3
@@ -169,7 +165,9 @@ do
 
       output_nordic="${BASE_rest}_run-${run}_echo-${echo}_part-mag_bold"
 
-      #for subjects with no noise scan, use   ARG.noise_volume_last=0, otherwise ARG.noise_volume_last=6
+      ##################### Important!! ###################################################################
+      ### for subjects with no noise scan, use  ARG.noise_volume_last=0, otherwise ARG.noise_volume_last=6
+      ###################################################################################################
       matlab -batch "addpath('${NORDIC_PATH}'); ARG.DIROUT='${OUT_DIR}'; ARG.noise_volume_last=0 ; NIFTI_NORDIC('${combined_abs}','${combined_phase}','${output_nordic}', ARG); exit"
 
       # Copy JSON from original magnitude echo
@@ -183,23 +181,46 @@ do
       
   done
 done
+rm ${OUT_DIR}/*.nii #only outputs we want are in .nii.gz
 
-# then copy anat folder to nordic folder
+# then copy anat folder to nordic BIDS folder
 cp -r /data/backed_up/shared/ME_7T_Pilot/BIDS/sub-${SUBJECT}/anat/ /data/backed_up/shared/ME_7T_Pilot/BIDS_NORDIC/sub-${SUBJECT}/anat/
 cp -r /data/backed_up/shared/ME_7T_Pilot/BIDS/sub-${SUBJECT}/fmap/ /data/backed_up/shared/ME_7T_Pilot/BIDS_NORDIC/sub-${SUBJECT}/fmap/
+
+
+###### IMPORTANT!! ##################################################################################################################
+### important, remember to add "IntendedFor" fields to the fmap json files before running fmriprep.
+##########################################################################################################################################
+SUBJECT=11075
+BIDS_DIR="/data/backed_up/shared/ME_7T_Pilot/BIDS_NORDIC/sub-${SUBJECT}"
+FMAP_DIR="${BIDS_DIR}/fmap"
+
+# Build the list of functional targets relative to the subject directory
+mapfile -t INTENDED_FOR < <(
+    cd "${BIDS_DIR}" && \
+    find func -maxdepth 1 -type f -name '*_bold.nii.gz' | sort
+)
+
+# Convert list to JSON array
+INTENDED_JSON=$(printf '%s\n' "${INTENDED_FOR[@]}" | jq -R . | jq -s .)
+
+# Update every fmap JSON in place
+for json in "${FMAP_DIR}"/*.json; do
+    tmp="${json}.tmp"
+    jq --argjson intended "$INTENDED_JSON" \
+       '.IntendedFor = $intended' \
+       "${json}" > "${tmp}" && mv "${tmp}" "${json}"
+    echo "Updated ${json}"
+done
 
 ####################################################################################################################################
 # the new BIDS_NORDIC folder should now be ready for fmriprep.
 # https://fmriprep.org/en/stable/usage.html
 # https://mriqc.readthedocs.io/en/latest/
 ####################################################################################################################################
-rm ${OUT_DIR}/*.nii #only outputs we want are in .nii.gz
 
-######
-### important, remember to add "IntendedFor" fields to the fmap json files before running fmriprep.
-######
 
-SUBJECT="11020"
+SUBJECT="11075"
 fmriprep_container=/data/backed_up/shared/software/containers/fmriprep_latest.sif
 apptainer exec \
 --bind /data/backed_up/shared:/data/backed_up/shared \
@@ -210,7 +231,7 @@ fmriprep /data/backed_up/shared/ME_7T_Pilot/BIDS_NORDIC \
 participant --participant_label ${SUBJECT} \
 -w /data/backed_up/shared/ME_7T_Pilot/work \
 --nprocs 24 \
---omp-nthreads 8 \
+--omp-nthreads 10 \
 --force bbr \
 --bold2anat-dof 12 \
 --me-output-echos \
@@ -220,14 +241,14 @@ participant --participant_label ${SUBJECT} \
 
 
 # MRIQC
-SUBJECT="11020"
+SUBJECT="11075"
 mriqc_container=/data/backed_up/shared/software/containers/mriqc_latest.sif
 apptainer exec \
 --bind /data/backed_up/shared:/data/backed_up/shared \
 ${mriqc_container} \
 mriqc /data/backed_up/shared/ME_7T_Pilot/BIDS_NORDIC /data/backed_up/shared/ME_7T_Pilot/MRIQC participant \
 -w /data/backed_up/shared/ME_7T_Pilot/work \
---participant-label ${SUBJECT} --nprocs 8 --omp-nthreads 8
+--participant-label ${SUBJECT} --nprocs 10 --omp-nthreads 10
 
 
 ########################################
