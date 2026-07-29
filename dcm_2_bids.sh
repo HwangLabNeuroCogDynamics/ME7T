@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 ### complete script to preprocess 7T ME-NORDIC data. Assuming you already downloaded it with xnat_test.sh
-
+### see these papers
+# https://www.nature.com/articles/s41467-021-25431-8
+# abd https://tedana.readthedocs.io/en/latest/multi-echo.html
 
 # note, pluma is the gedit alternative on samsara
 # the new data are in /data/backed_up/shared/ME_7T_Pilot/
