@@ -1,3 +1,9 @@
+
+##### !!!!!!!!!!!!! #####
+##### FOR ME 7T, this is OUTDATED. DONT USE!!
+##### !!!!!!!!!!!!! #####
+
+
 #enter the name of the file we want to move, copy, unzip, and link
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # - - - MODIFY THE VARIABLES BELOW!!!!
