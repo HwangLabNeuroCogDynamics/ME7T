@@ -1,5 +1,7 @@
 # #!/bin/bash
-### the latest XNAT download script. Note for our 7T ME/NORDIC data, this could take up to TWO DAYS.
+### the latest XNAT download script. 
+# Note for our 7T ME/NORDIC data, it can take several days before the data is fully available on  XNAT
+# Then it could take up to TWO DAYS to download. Each functional run is about 4.5 GB of data, so with 10 runs we are looking at 45GB of raw data.
 
 
 ###### 1. log on to XNAT to check the pracs number and subject ID you want to download
@@ -13,7 +15,7 @@ mkdir -p "${TMPROOT}"
 
 ###### 2. also on XNAT, note the series/runs you want to download.
 # You can just enter the ones you want and skip things we dont need (localizer, etc)
-SCANS=(2 19 20 800 900 1000 1100 1200 1300 1400 1500 1600 1700 1800 2100)
+SCANS=(1000 1100 1200 1300 1400 1500 1600 1700 1800 2100)
 # if notice any scans are missing, email Vince. They have to reconstruct our data offline given the size of our acquisition
 
 for SCAN in "${SCANS[@]}"; do
@@ -37,7 +39,7 @@ for SCAN in "${SCANS[@]}"; do
     if [[ -z "${ENTRY}" ]]; then
         echo "ERROR: Could not find DICOM files path in scan ${SCAN}"
         rm -rf "${TMPDIR}"
-        exit 1
+        #exit 1
     fi
 
 
@@ -55,7 +57,7 @@ for SCAN in "${SCANS[@]}"; do
         echo "ERROR: Missing DICOM files directory for scan ${SCAN}"
         echo "Expected: ${TMPDIR}/${SERIESDIR}/resources/DICOM/files"
         rm -rf "${TMPDIR}"
-        exit 1
+        #exit 1
     fi
 
     mv "${TMPDIR}/${SERIESDIR}/resources/DICOM/files" "${RUNDIR}/${SERIESNAME}"
