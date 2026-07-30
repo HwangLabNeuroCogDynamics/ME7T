@@ -1,0 +1,143 @@
+
+{
+  "search_method": "fnmatch", # This is a commented version to explain how we can setup the config.json for DCM2BIDS.
+  "descriptions": [
+
+    {
+      "datatype": "anat",
+      "suffix": "T1w",
+      "criteria": {
+        "SeriesNumber": 2, ### For anatomicals typicall it is the *2nd* run, do double check
+
+        "SeriesDescription": "*MP-RAGE*" #this is usually the series name for MPRAGE
+      }
+    },
+
+    {
+      "datatype": "func",
+      "suffix": "bold",
+      "custom_entities": "task-HCC_echo-1_part-mag", ### for functionsl we will be generating 3 echos by {mag, phase, real} data, so 9 reconstructed copies per run
+      "criteria": {
+        "SeriesNumber": {
+        "any": [1000, 1100, 1200, 1300, 1400]}, ### on XNAT, they will be reconstructed into run_number + 00, so 1000 means the 10th run. # use this field to figure out the reconstructed dicoms we want
+        "EchoNumber": 1, # first echo
+        "ImageType": ["ORIGINAL","PRIMARY","OTHER","MAGNITUDE"] #magnitude
+      }
+    },
+
+    {
+      "datatype": "func",
+      "suffix": "bold",
+      "custom_entities": "task-HCC_echo-1_part-ph",
+      "criteria": {
+        "SeriesNumber": {
+        "any": [1000, 1100, 1200, 1300, 1400]},
+        "EchoNumber": 1,
+        "ImageType": ["ORIGINAL","PRIMARY","OTHER","IMAGINARY"] #imag
+      }
+    },
+
+    {
+      "datatype": "func",
+      "suffix": "bold",
+      "custom_entities": "task-HCC_echo-1_part-real",
+      "criteria": {
+        "SeriesNumber": {
+        "any": [1000, 1100, 1200, 1300, 1400]},
+        "EchoNumber": 1,
+        "ImageType": ["ORIGINAL","PRIMARY","OTHER","REAL"] #real data
+      }
+    },
+
+    {
+      "datatype": "func",
+      "suffix": "bold",
+      "custom_entities": "task-HCC_echo-2_part-mag",
+      "criteria": {
+        "SeriesNumber": {
+        "any": [1000, 1100, 1200, 1300, 1400]},
+        "EchoNumber": 2, # second echo
+        "ImageType": ["ORIGINAL","PRIMARY","OTHER","MAGNITUDE"]
+      }
+    },
+
+    {
+      "datatype": "func",
+      "suffix": "bold",
+      "custom_entities": "task-HCC_echo-2_part-ph",
+      "criteria": {
+        "SeriesNumber": {
+        "any": [1000, 1100, 1200, 1300, 1400]},
+        "EchoNumber": 2,
+        "ImageType": ["ORIGINAL","PRIMARY","OTHER","IMAGINARY"]
+      }
+    },
+
+    {
+      "datatype": "func",
+      "suffix": "bold",
+      "custom_entities": "task-HCC_echo-2_part-real",
+      "criteria": {
+        "SeriesNumber": {
+        "any": [1000, 1100, 1200, 1300, 1400]},
+        "EchoNumber": 2,
+        "ImageType": ["ORIGINAL","PRIMARY","OTHER","REAL"]
+      }
+    },
+
+    {
+      "datatype": "func",
+      "suffix": "bold",
+      "custom_entities": "task-HCC_echo-3_part-mag",
+      "criteria": {
+        "SeriesNumber": {
+        "any": [1000, 1100, 1200, 1300, 1400]},
+        "EchoNumber": 3, # third echo
+        "ImageType": ["ORIGINAL","PRIMARY","OTHER","MAGNITUDE"]
+      }
+    },
+
+    {
+      "datatype": "func",
+      "suffix": "bold",
+      "custom_entities": "task-HCC_echo-3_part-ph",
+      "criteria": {
+        "SeriesNumber": {
+        "any": [1000, 1100, 1200, 1300, 1400]},
+        "EchoNumber": 3,
+        "ImageType": ["ORIGINAL","PRIMARY","OTHER","IMAGINARY"]
+      }
+    },
+
+    {
+      "datatype": "func",
+      "suffix": "bold",
+      "custom_entities": "task-HCC_echo-3_part-real",
+      "criteria": {
+        "SeriesNumber": {
+        "any": [1000, 1100, 1200, 1300, 1400]},
+        "EchoNumber": 3,
+        "ImageType": ["ORIGINAL","PRIMARY","OTHER","REAL"]
+      }
+    },
+
+    {
+      "datatype": "fmap",
+      "suffix": "epi",
+      "custom_entities": "dir-pe0",
+      "criteria": {
+        "SeriesDescription": "SE EPI"  #field map one direction
+      }
+    },
+
+    {
+      "datatype": "fmap",
+      "suffix": "epi",
+      "custom_entities": "dir-pe1",
+      "criteria": {
+        "SeriesDescription": "SE EPI REVPE"  #field map second direction
+      }
+    }
+
+  ]
+}
