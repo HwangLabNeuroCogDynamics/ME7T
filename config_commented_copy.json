@@ -146,7 +146,6 @@
       "suffix": "bold",
       "custom_entities": "task-noise_echo-1_part-mag",
       "criteria": {
-        "ProtocolName": "*HyperMEPI*",
         "SeriesNumber": {
         "any": [700, 900]},
         "EchoNumber": 1,
@@ -159,7 +158,6 @@
       "suffix": "bold",
       "custom_entities": "task-noise_echo-1_part-ph",
       "criteria": {
-        "ProtocolName": "*HyperMEPI*",
         "SeriesNumber": {
         "any": [700, 900]},
         "EchoNumber": 1,
@@ -172,7 +170,6 @@
       "suffix": "bold",
       "custom_entities": "task-noise_echo-1_part-real",
       "criteria": {
-        "ProtocolName": "*HyperMEPI*",
         "SeriesNumber": {
         "any": [700, 900]},
         "EchoNumber": 1,
@@ -185,7 +182,6 @@
       "suffix": "bold",
       "custom_entities": "task-noise_echo-2_part-mag",
       "criteria": {
-        "ProtocolName": "*HyperMEPI*",
         "SeriesNumber": {
         "any": [700, 900]},
         "EchoNumber": 2,
@@ -198,7 +194,6 @@
       "suffix": "bold",
       "custom_entities": "task-noise_echo-2_part-ph",
       "criteria": {
-        "ProtocolName": "*HyperMEPI*",
         "SeriesNumber": {
         "any": [700, 900]},
         "EchoNumber": 2,
@@ -211,7 +206,6 @@
       "suffix": "bold",
       "custom_entities": "task-noise_echo-2_part-real",
       "criteria": {
-        "ProtocolName": "*HyperMEPI*",
         "SeriesNumber": {
         "any": [700, 900]},
         "EchoNumber": 2,
@@ -224,7 +218,6 @@
       "suffix": "bold",
       "custom_entities": "task-noise_echo-3_part-mag",
       "criteria": {
-        "ProtocolName": "*HyperMEPI*",
         "SeriesNumber": {
         "any": [700, 900]},
         "EchoNumber": 3,
@@ -237,7 +230,6 @@
       "suffix": "bold",
       "custom_entities": "task-noise_echo-3_part-ph",
       "criteria": {
-        "ProtocolName": "*HyperMEPI*",
         "SeriesNumber": {
         "any": [700, 900]},
         "EchoNumber": 3,
@@ -250,7 +242,6 @@
       "suffix": "bold",
       "custom_entities": "task-noise_echo-3_part-real",
       "criteria": {
-        "ProtocolName": "*HyperMEPI*",
         "SeriesNumber": {
         "any": [700, 900]},
         "EchoNumber": 3,
