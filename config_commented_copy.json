@@ -139,5 +139,125 @@
       }
     }
 
+
+    # below are for noise scans. Looks like the only way is to know exactly which series contains the noise scan (i.e., which *00)
+    {
+      "datatype": "func",
+      "suffix": "bold",
+      "custom_entities": "task-noise_echo-1_part-mag",
+      "criteria": {
+        "ProtocolName": "*HyperMEPI*",
+        "SeriesNumber": {
+        "any": [700, 900]},
+        "EchoNumber": 1,
+        "ImageType": ["ORIGINAL","PRIMARY","OTHER","MAGNITUDE"]
+      }
+    },
+
+    {
+      "datatype": "func",
+      "suffix": "bold",
+      "custom_entities": "task-noise_echo-1_part-ph",
+      "criteria": {
+        "ProtocolName": "*HyperMEPI*",
+        "SeriesNumber": {
+        "any": [700, 900]},
+        "EchoNumber": 1,
+        "ImageType": ["ORIGINAL","PRIMARY","OTHER","IMAGINARY"]
+      }
+    },
+
+    {
+      "datatype": "func",
+      "suffix": "bold",
+      "custom_entities": "task-noise_echo-1_part-real",
+      "criteria": {
+        "ProtocolName": "*HyperMEPI*",
+        "SeriesNumber": {
+        "any": [700, 900]},
+        "EchoNumber": 1,
+        "ImageType": ["ORIGINAL","PRIMARY","OTHER","REAL"]
+      }
+    },
+
+    {
+      "datatype": "func",
+      "suffix": "bold",
+      "custom_entities": "task-noise_echo-2_part-mag",
+      "criteria": {
+        "ProtocolName": "*HyperMEPI*",
+        "SeriesNumber": {
+        "any": [700, 900]},
+        "EchoNumber": 2,
+        "ImageType": ["ORIGINAL","PRIMARY","OTHER","MAGNITUDE"]
+      }
+    },
+
+    {
+      "datatype": "func",
+      "suffix": "bold",
+      "custom_entities": "task-noise_echo-2_part-ph",
+      "criteria": {
+        "ProtocolName": "*HyperMEPI*",
+        "SeriesNumber": {
+        "any": [700, 900]},
+        "EchoNumber": 2,
+        "ImageType": ["ORIGINAL","PRIMARY","OTHER","IMAGINARY"]
+      }
+    },
+
+    {
+      "datatype": "func",
+      "suffix": "bold",
+      "custom_entities": "task-noise_echo-2_part-real",
+      "criteria": {
+        "ProtocolName": "*HyperMEPI*",
+        "SeriesNumber": {
+        "any": [700, 900]},
+        "EchoNumber": 2,
+        "ImageType": ["ORIGINAL","PRIMARY","OTHER","REAL"]
+      }
+    },
+
+    {
+      "datatype": "func",
+      "suffix": "bold",
+      "custom_entities": "task-noise_echo-3_part-mag",
+      "criteria": {
+        "ProtocolName": "*HyperMEPI*",
+        "SeriesNumber": {
+        "any": [700, 900]},
+        "EchoNumber": 3,
+        "ImageType": ["ORIGINAL","PRIMARY","OTHER","MAGNITUDE"]
+      }
+    },
+
+    {
+      "datatype": "func",
+      "suffix": "bold",
+      "custom_entities": "task-noise_echo-3_part-ph",
+      "criteria": {
+        "ProtocolName": "*HyperMEPI*",
+        "SeriesNumber": {
+        "any": [700, 900]},
+        "EchoNumber": 3,
+        "ImageType": ["ORIGINAL","PRIMARY","OTHER","IMAGINARY"]
+      }
+    },
+
+    {
+      "datatype": "func",
+      "suffix": "bold",
+      "custom_entities": "task-noise_echo-3_part-real",
+      "criteria": {
+        "ProtocolName": "*HyperMEPI*",
+        "SeriesNumber": {
+        "any": [700, 900]},
+        "EchoNumber": 3,
+        "ImageType": ["ORIGINAL","PRIMARY","OTHER","REAL"]
+      }
+    },
+
+
   ]
 }
